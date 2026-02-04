@@ -337,8 +337,7 @@ load_accentor(model_path='acc_model.pt',
 | Устройство | Batch Size | Скорость (предл/сек) |
 |------------|-----------|---------------------|
 | Mac Mini M4 (MPS) | 8 | 2.5 |
-| Mac Mini M4 (MPS) | 32 | 4.2 |
-| MacBook Air M1 (MPS) | 8 | 2.1 |
+| MacBook Air M1 (MPS) | 8 | 1.5 |
 | CPU (8 cores) | 8 | 0.8 |
 
 ## 🤝 Вклад в проект

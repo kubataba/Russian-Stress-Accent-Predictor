@@ -1,0 +1,70 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Build and distribution
+build/
+dist/
+*.egg-info/
+*.egg
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# PyTorch temporary files
+*.pt.bak
+*.pth.bak
+checkpoints/
+runs/
+
+# Data temporary files
+*.csv.tmp
+*.json.tmp
+*.pkl
+*.pickle
+
+# Logs
+*.log
+logs/
+
+# Не игнорируем важные файлы проекта
+!README.md
+!LICENSE
+!requirements.txt
+!accentor.py
+!prepare_data.py
+!train_model.py
+!model.py
+!test.py
+!examples/basic_usage.py
+!examples/batch_processing.py
+!data/train.csv
+!data/val.csv
+!model/acc_model.pt
+!model/vocab.json
+!.gitattributes

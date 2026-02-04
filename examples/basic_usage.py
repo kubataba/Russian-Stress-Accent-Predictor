@@ -1,89 +1,58 @@
+#!/usr/bin/env python3
 """
-Basic Usage Example
-Демонстрация базового использования Russian Accentor
+Basic usage example for RuAccent Predictor.
+Shows basic functionality with different output formats.
 """
-
-from accentor import load_accentor
+from ruaccent import load_accentor
 
 def main():
-    print("=" * 60)
-    print("Russian Accentor - Basic Usage Example")
-    print("=" * 60)
+    print("=== Basic Usage Example ===\n")
     
-    # Загрузка модели
-    print("\nЗагрузка модели...")
-    accentor = load_accentor(
-        model_path='model/acc_model.pt',
-        vocab_path='model/vocab.json',
-        device='auto'  # Автоопределение: cuda > mps > cpu
-    )
+    # Load the model with default settings
+    accentor = load_accentor()
+    print(f"Model loaded on: {accentor.device}")
+    print(f"Vocabulary size: {len(accentor.vocab)}\n")
     
-    # Тестовые примеры
-    test_sentences = [
-        "Привет, как дела?",
-        "Я иду домой через парк.",
-        "Замок на замке был закрыт.",
-        "Солнце светит ярко в небе.",
-        "Это очень хороший день для прогулки.",
+    # Example texts
+    texts = [
+        "привет мир",
+        "мама мыла раму",
+        "солнце светит ярко",
+        "я иду домой",
     ]
     
-    print("\n" + "=" * 60)
-    print("Примеры расстановки ударений")
-    print("=" * 60)
+    print("1. Default (apostrophe) format:")
+    for text in texts:
+        result = accentor(text, format='apostrophe')
+        print(f"   {text:25} → {result}")
     
-    # Пример 1: Формат с апострофом
-    print("\n1. ФОРМАТ С АПОСТРОФОМ (apostrophe)")
-    print("-" * 60)
-    for sentence in test_sentences:
-        result = accentor(sentence, format='apostrophe')
-        print(f"Вход:  {sentence}")
-        print(f"Выход: {result}\n")
+    print("\n2. Synthesis format:")
+    for text in texts:
+        result = accentor(text, format='synthesis')
+        print(f"   {text:25} → {result}")
     
-    # Пример 2: Формат для синтеза
-    print("\n2. ФОРМАТ ДЛЯ СИНТЕЗА РЕЧИ (synthesis)")
-    print("-" * 60)
-    for sentence in test_sentences[:3]:  # Первые 3 для краткости
-        result = accentor(sentence, format='synthesis')
-        print(f"Вход:  {sentence}")
-        print(f"Выход: {result}\n")
+    print("\n3. Both formats at once:")
+    for text in texts[:2]:  # Just first two for brevity
+        apostrophe, synthesis = accentor(text, format='both')
+        print(f"   Original:  {text}")
+        print(f"     Apostrophe: {apostrophe}")
+        print(f"     Synthesis:  {synthesis}")
     
-    # Пример 3: Оба формата сразу
-    print("\n3. ОБА ФОРМАТА ОДНОВРЕМЕННО (both)")
-    print("-" * 60)
-    text = "Мама мыла раму в красивой раме."
-    apostrophe, synthesis = accentor(text, format='both')
-    print(f"Вход:      {text}")
-    print(f"Апостроф:  {apostrophe}")
-    print(f"Синтез:    {synthesis}")
+    print("\n4. Single text with different formats:")
+    text = "это простой пример"
     
-    # Пример 4: Обработка списка
-    print("\n4. ПАКЕТНАЯ ОБРАБОТКА")
-    print("-" * 60)
-    batch_texts = [
-        "Первое предложение.",
-        "Второе предложение.",
-        "Третье предложение."
-    ]
-    results = accentor(batch_texts, format='apostrophe')
-    for original, accented in zip(batch_texts, results):
-        print(f"{original:30} → {accented}")
+    apostrophe_result = accentor(text, format='apostrophe')
+    synthesis_result = accentor(text, format='synthesis')
+    both_results = accentor(text, format='both')
     
-    # Информация о кэше
-    print("\n" + "=" * 60)
-    print("Информация о кэше")
-    print("=" * 60)
-    cache_info = accentor.cache_info()
-    print(f"Размер кэша: {cache_info['size']} записей")
-    print(f"Попадания:   {cache_info['hits']}")
-    print(f"Промахи:     {cache_info['misses']}")
-    if cache_info['hits'] + cache_info['misses'] > 0:
-        hit_rate = cache_info['hits'] / (cache_info['hits'] + cache_info['misses'])
-        print(f"Процент попаданий: {hit_rate:.1%}")
+    print(f"   Original:  {text}")
+    print(f"   Apostrophe: {apostrophe_result}")
+    print(f"   Synthesis:  {synthesis_result}")
+    print(f"   Both (tuple): {both_results}")
     
-    print("\n" + "=" * 60)
-    print("Пример завершён!")
-    print("=" * 60)
-
+    print("\n✅ Basic example completed!")
+    print("\nTip: Run 'ruaccent --help' for CLI options")
+    print("     or see batch_processing.py for batch examples")
 
 if __name__ == "__main__":
     main()

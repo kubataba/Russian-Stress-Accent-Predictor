@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ruaccent-predictor"
+version = "1.1.0"
+description = "Russian stress accent prediction using Transformer model"
+readme = "README.md"
+authors = [
+    {name = "Eduard Emkuzhev", email = "your-email@example.com"}
+]
+license = {text = "MIT"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Text Processing :: Linguistic",
+    "Topic :: Text Processing :: Markup",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+]
+keywords = ["nlp", "russian", "accent", "stress", "transformer", "text-processing", "linguistics"]
+requires-python = ">=3.8"
+dependencies = [
+    "torch>=2.0.0",
+    "tqdm>=4.65.0",
+    "pandas>=2.0.0",
+    "numpy>=1.24.0"
+]
+
+[project.urls]
+Homepage = "https://github.com/kubataba/Russian-Stress-Accent-Predictor"
+Repository = "https://github.com/kubataba/Russian-Stress-Accent-Predictor.git"
+"Issue Tracker" = "https://github.com/kubataba/Russian-Stress-Accent-Predictor/issues"
+
+[project.scripts]
+ruaccent = "ruaccent.cli:main"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["ruaccent*"]
+namespaces = false

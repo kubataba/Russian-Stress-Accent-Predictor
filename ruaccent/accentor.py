@@ -172,8 +172,8 @@ class Accentor:
     
     def __init__(
         self,
-        model_path: str = 'acc_model.pt',
-        vocab_path: str = 'vocab.json',
+        model_path: str = 'model/acc_model.pt',
+        vocab_path: str = 'model/vocab.json',
         device: str = None,
         quantize: bool = False,
         max_len: int = 200
@@ -192,7 +192,7 @@ class Accentor:
         torch.set_num_threads(min(4, torch.get_num_threads()))
         
         # Auto-detect device
-        if device is None:
+        if device=="auto" or device is None:
             if torch.cuda.is_available():
                 device = 'cuda'
                 print(f"✅ Using CUDA device: {torch.cuda.get_device_name(0)}")
@@ -594,8 +594,8 @@ class Accentor:
 # ============================================================================
 
 def load_accentor(
-    model_path: str = 'acc_model.pt',
-    vocab_path: str = 'vocab.json',
+    model_path: str = 'model/acc_model.pt',
+    vocab_path: str = 'model/vocab.json',
     device: str = None,
     quantize: bool = False
 ) -> Accentor:

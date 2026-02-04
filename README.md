@@ -1,381 +1,300 @@
-# Russian Stress Accent Predictor (Accentor)
+# Russian Stress Accent Predictor (Accentor) - ruaccent-predictor
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-ee4c2c.svg)](https://pytorch.org/)
 
-Автоматическая расстановка ударений в русском тексте с помощью Transformer-модели на уровне символов.
+Automatic stress accent placement in Russian text using a character-level Transformer model. Available on PyPI as `ruaccent-predictor`.
 
-## 📋 Описание
+## 📋 Description
 
-Проект представляет собой модель глубокого обучения для автоматического добавления ударений в русский текст. Модель обучена на датасете из более чем 224,000 пар предложений из художественной литературы и достигает точности **99.7%** на валидационном наборе данных.
+This project is a deep learning model for automatic stress accent placement in Russian text. The model is trained on a dataset of over 224,000 sentence pairs from literary works and achieves **99.7% accuracy** on the validation dataset.
 
-### Основные возможности
+### Key Features
 
-- ✅ Точность 99.7% на валидационном датасете
-- 🚀 Два формата вывода: апостроф (я́) и синтез (+я)
-- ⚡ Поддержка batch-обработки для ускорения
-- 💾 Встроенное кэширование результатов
-- 🔧 Поддержка CPU, CUDA и Apple MPS (Metal)
-- 📦 Простой API для интеграции
+- ✅ 99.7% accuracy on validation dataset
+- 🚀 Two output formats: apostrophe (я́) and synthesis (+я)
+- ⚡ Batch processing support for speed optimization
+- 💾 Built-in result caching
+- 🔧 Support for CPU, CUDA, and Apple MPS (Metal)
+- 📦 Easy pip installation: `pip install ruaccent-predictor`
 
-### Форматы вывода
+### Technical Details
 
-**Apostrophe format** (формат апострофа): ударение ставится после ударной гласной  
-`Пример: Я' уста'ло иду' во главе' свое'й а'рмии`
+**Character-Level Model**: The model operates at the character level with an automatically extracted vocabulary of 224 characters from the training dataset. This approach allows for high accuracy while maintaining a compact model size (~12.5M parameters).
 
-**Synthesis format** (формат для синтеза речи): знак + ставится перед ударной гласной  
-`Пример: +Я уст+ало ид+у во глав+е сво+ей +армии`
+**Vocabulary**: Automatically extracted from the training corpus, includes:  
 
-## 🎯 Производительность
+- Cyrillic letters (uppercase and lowercase)
+- Basic punctuation
+- Latin letters
+- Special tokens
 
-- **Точность**: 99.7% на валидационном наборе (22,000 предложений)
-- **Скорость**: ~2.5 предложения/сек на Mac Mini M4
-- **Размер модели**: ~12.5M параметров
-- **Vocabulary**: 224 символа (кириллица, пунктуация, латиница)
+### Output Formats
 
-## 📦 Установка
+**Apostrophe format**: Stress mark is placed **after** the stressed vowel  
+`Example: В лесу' родила'сь ёлочка` (Optimal for reading with stress marks during learning)
 
-### Требования
+**Synthesis format**: Plus sign is placed **before** the stressed vowel  
+`Example: В лес+у родил+ась ёлочка` (Optimal for speech synthesis, e.g., Silero TTS)
+
+## ⚠️ Model Limitations
+
+The model has the following known limitations:
+
+1. **Does not restore missing letter "ё"**: The model works with the input text as-is and does not replace "е" with "ё"
+2. **Does not mark stress on "ё"**: Since "ё" is always stressed in Russian, the model does not place additional stress marks on it
+3. **Single-vowel words**: Words with only one vowel are not marked as they are inherently stressed
+4. **No grammatical analysis**: The model operates purely on character sequences without morphological or syntactic analysis
+5. **Training data limitations**: Accuracy may vary for texts outside the literary domain of the training data
+
+## 📦 PyPI Installation
+
+The package is available on PyPI as `ruaccent-predictor`:  
 
 ```bash
-Python 3.8+
-PyTorch 2.0+
+pip install ruaccent-predictor
 ```
 
-### Установка зависимостей
+### Usage as Python Package  
+
+```python
+from ruaccent import load_accentor
+
+# Load the model  
+
+accentor = load_accentor()
+
+# Predict stress accents  
+
+text = "привет мир"
+result = accentor(text)
+print(result)  # приве'т мир
+```
+
+### Usage as CLI Tool
+
+After installation, use the `ruaccent` command:  
 
 ```bash
-pip install torch tqdm
+# Process single text
+ruaccent "привет как дела"
+
+# Process file
+ruaccent --input-file input.txt --output-file output.txt
+
+# Synthesis format
+ruaccent "привет" --format synthesis
+
+# Both formats
+ruaccent "текст" --format both
+
+# Pipe input
+echo "мама мыла раму" | ruaccent 
 ```
 
-### Скачивание модели
+### Available Options:  
 
-Скачайте файлы модели и словаря:
-- `acc_model.pt` (файл модели)
-- `vocab.json` (словарь символов)
+- `--format`: Output format (apostrophe, synthesis, both)
+- `--batch-size`: Batch size for processing (default: 8)
+- `--device`: Device for inference (auto, cpu, cuda, mps)
+- `--input-file`, `-i`: Input text file
+- `--output-file`, `-o`: Output file
 
-Поместите их в рабочую директорию или укажите путь при загрузке.
+## 🎯 Performance
 
-## 🚀 Быстрый старт
+### Benchmarks  
+- **Accuracy**: 99.7% on validation set (22,000 sentences)
+- **Speed**: ~10 sentences /sec with batch_size=8 on Mac Mini M4
+- **Model size**: ~12.5M parameters
+- **Vocabulary**: 224 characters (Cyrillic, punctuation, Latin)
+
+### Optimal Settings  
 
 ```python
-from accentor import load_accentor
-
-# Загрузка модели
-accentor = load_accentor(
-    model_path='acc_model.pt',
-    vocab_path='vocab.json',
-    device='auto'  # auto, cpu, cuda, или mps
-)
-
-# Простое использование
-text = "Привет, как дела?"
-
-# Формат с апострофом
-result = accentor(text, format='apostrophe')
-print(result)  # Приве'т, как дела'?
-
-# Формат для синтеза речи
-result = accentor(text, format='synthesis')
-print(result)  # Прив+ет, как д+ела?
-
-# Оба формата сразу
-apostrophe, synthesis = accentor(text, format='both')
+# For maximum performance
+accentor = load_accentor()
+results = accentor(texts, batch_size=8, format='apostrophe')
 ```
 
-### Batch-обработка
+## 📁 Project Structure
+
+```
+Russian-Stress-Accent-Predictor/
+├── ruaccent/                    # Main package (PyPI)
+│   ├── __init__.py
+│   ├── accentor.py             # Main module with model
+│   └── cli.py                  # CLI interface
+├── model/                      # Trained model
+│   ├── README.md              # Model documentation
+│   ├── acc_model.pt           # Model weights (30MB, Git LFS)
+│   └── vocab.json             # Character vocabulary
+├── data/                       # Datasets
+│   ├── train.csv              # Training set (115MB, Git LFS)
+│   └── val.csv                # Validation set (13MB)
+├── examples/                   # Usage examples
+│   ├── basic_usage.py         # Basic examples
+│   └── batch_processing.py    # Batch processing and tests
+├── train_scripts/              # Model training scripts
+│   ├── model.py               # Transformer architecture
+│   ├── prepare_data.py        # Data preparation
+│   ├── train_model.py         # Model training
+│   └── README.md              # Training instructions
+├── .gitattributes             # Git LFS configuration
+├── .gitignore                 # Ignored files
+├── LICENSE                    # MIT license
+├── MANIFEST.in                # Included files for PyPI
+├── pyproject.toml             # Package configuration
+├── README.md                  # This documentation
+├── requirements.txt           # Python dependencies
+├── setup.py                   # Package setup
+└── run_training.sh            # Training launch script
+```
+
+## 🧪 Usage Examples
+
+### Basic Example (examples/basic_usage.py)  
 
 ```python
-texts = [
-    "Я иду домой",
-    "Это хороший день",
-    "Солнце светит ярко"
-]
+from ruaccent import load_accentor
 
-# Обработка списка текстов (автоматически использует батчи)
-results = accentor(texts, format='apostrophe', batch_size=32)
+accentor = load_accentor()
+texts = ["привет мир", "мама мыла раму", "солнце светит ярко"]
+
+# Apostrophe format
+results = accentor(texts, format='apostrophe')
 for original, accented in zip(texts, results):
     print(f"{original} → {accented}")
 ```
 
-## 📊 Архитектура модели
-
-Модель основана на архитектуре Transformer с символьными эмбеддингами:
-
-```
-Архитектура:
-- Encoder: 4 слоя, 8 attention heads
-- Decoder: 4 слоя, 8 attention heads  
-- Embedding dimension: 256
-- Feed-forward dimension: 1024
-- Параметров: ~12.5M
-- Максимальная длина: 256 символов
-```
-
-## 📁 Структура проекта
-
-```
-russian-accentor/
-│
-├── README.md                 # Этот файл
-├── LICENSE                   # Лицензия MIT
-│
-├── accentor.py              # Основной модуль для инференса
-├── prepare_data.py          # Скрипт подготовки данных
-├── train_model.py           # Скрипт обучения модели
-├── model.py                 # Классы для обучения модели
-├── test.py                  # Скрипт тестирования
-│
-├── model/                   # Директория с обученной моделью
-│   ├── acc_model.pt        # Веса модели (~30MB)
-│   └── vocab.json          # Словарь символов
-│
-├── data/                    # Датасеты (не включены в репозиторий)
-│   ├── train.csv           # Обучающий набор (202k пар)
-│   └── val.csv             # Валидационный набор (22k пар)
-│
-├── examples/                # Примеры использования
-│   ├── basic_usage.py
-│   └── batch_processing.py
-│
-└── requirements.txt         # Зависимости
-```
-
-## 🔧 Использование скриптов
-
-### Тестирование модели
+### Batch Processing and Tests (examples/batch_processing.py)  
 
 ```bash
-python test.py --input input.txt --batch-size 32 --format both
+python examples/batch_processing.py
 ```
+Tests performance with different batch sizes, shows cache statistics and optimal settings.
 
-Параметры:
-- `--input`: входной текстовый файл
-- `--output-json`: выходной JSON файл с результатами
-- `--batch-size`: размер батча (по умолчанию: 8)
-- `--max-sentences`: максимальное количество предложений
-- `--device`: устройство (cpu, mps, cuda, auto)
-- `--format`: формат вывода (apostrophe, synthesis, both)
+## 🏗️ Training Scripts
 
-### Обучение с нуля
+For developers and researchers in the `train_scripts/` folder:
+
+### Training Scripts  
+
+- `model.py` - Transformer architecture definition
+- `prepare_data.py` - Data preprocessing and preparation
+- `train_model.py` - Main training script
+
+### Training from Scratch  
 
 ```bash
-# 1. Подготовка данных
-python prepare_data.py
+# Install dependencies
+pip install torch pandas tqdm
 
-# 2. Обучение модели
+# Start training
+cd train_scripts
 python train_model.py
 ```
 
-## 📚 Данные
+**Note**: Training requires significant resources (GPU recommended) and takes several hours.
 
-### Источник данных
+## 🔤 Output Formats
 
-Модель обучена на датасете [Accentual-Syllabic Verse in Russian Prose](https://huggingface.co/datasets/nevmenandr/accentual-syllabic-verse-in-russian-prose) под лицензией MIT.
+### 1. Apostrophe Format (я').  
+ 
+Apostrophe is placed **after** the stressed vowel:  
 
-### Статистика датасета
+- Input: `привет`
+- Output: `приве'т`
+- Use case: Text display, reading
 
-- **Обучающий набор**: 202,000 пар предложений
-- **Валидационный набор**: 22,000 пар предложений
-- **Источник**: художественная литература на русском языке
-- **Средняя длина**: ~120 символов на предложение
-- **Среднее количество ударений**: ~8 на предложение
+### 2. Synthesis Format (+я). 
 
-### Формат данных
+Plus sign is placed **before** the stressed vowel:  
 
-CSV файлы со следующей структурой:
+- Input: `привет`
+- Output: `прив+ет`
+- Use case: Speech synthesis, TTS systems
 
-```csv
-source,target,length,stress_count,word_count
-"Я иду домой","Я' иду' домо'й",11,3,3
+## 🚀 Quick Start
+
+### After pip installation:  
+
+```bash
+# Verify installation
+ruaccent "тестовая фраза"
+
+# Run examples  
+python examples/basic_usage.py  
 ```
 
-## 🎓 Обучение модели
+### From Source Code:  
 
-### Гиперпараметры
+```bash
+# Clone repository  
+git clone https://github.com/kubataba/Russian-Stress-Accent-Predictor.git
+cd Russian-Stress-Accent-Predictor
 
-```python
-# Архитектура
-d_model = 256
-nhead = 8
-num_encoder_layers = 4
-num_decoder_layers = 4
-dim_feedforward = 1024
+# Install in development mode  
 
-# Обучение
-batch_size = 16
-learning_rate = 5e-4
-num_epochs = 10
-warmup_steps = 500
-gradient_accumulation_steps = 4
+pip install -e .
+
+# Use as usual  
+
+ruaccent "ваш текст"
 ```
 
-### Метрики обучения
+## 📊 Performance and Caching
 
-| Эпоха | Train Loss | Val Loss | Val Accuracy |
-|-------|-----------|----------|--------------|
-| 1     | 0.709     | 0.092    | 96.7%        |
-| 5     | 0.078     | 0.013    | 99.5%        |
-| 10    | 0.041     | 0.009    | 99.7%        |
+The model uses intelligent caching:  
 
-## 💡 Примеры
-
-### Пример 1: Базовое использование
+- **Cache hits**: ~0.0000s per text
+- **Cache misses**: ~0.5s for first call
+- **Optimal batch size**: 8 (10 sentences /sec on MPS)
+- **Cache size**: Up to 10,000 items  
 
 ```python
-from accentor import load_accentor
-
-accentor = load_accentor()
-
-# Одно предложение
-text = "Замок на замке был закрыт"
-result = accentor(text)
-print(result)  # За'мок на замке' был за'крыт
-```
-
-### Пример 2: Обработка файла
-
-```python
-from accentor import load_accentor
-from pathlib import Path
-
-accentor = load_accentor()
-
-# Чтение файла
-input_file = Path("input.txt")
-with open(input_file, 'r', encoding='utf-8') as f:
-    lines = [line.strip() for line in f if line.strip()]
-
-# Обработка батчами
-results = accentor(lines, batch_size=32)
-
-# Сохранение результатов
-output_file = Path("output.txt")
-with open(output_file, 'w', encoding='utf-8') as f:
-    for line in results:
-        f.write(line + '\n')
-```
-
-### Пример 3: Кэширование
-
-```python
-accentor = load_accentor()
-
-# Часто используемые фразы кэшируются
-for _ in range(100):
-    result = accentor("Привет, мир!")  # Быстро после первого раза
-
-# Проверка кэша
+# View cache statistics  
 cache_info = accentor.cache_info()
-print(f"Cache hits: {cache_info['hits']}")
-print(f"Cache misses: {cache_info['misses']}")
+print(f"Cache hits: {cache_info['hits']}, misses: {cache_info['misses']}")
 
-# Очистка кэша
+# Clear cache  
+
 accentor.clear_cache()
 ```
 
-## 🔍 API Reference
+## 🤝 Contributing
 
-### Класс Accentor
+Contributions are welcome!
 
-#### `__init__(model_path, vocab_path, device, quantize, max_len)`
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-Инициализация модели.
+## 📄 License
 
-**Параметры:**
-- `model_path` (str): путь к файлу модели
-- `vocab_path` (str): путь к файлу словаря
-- `device` (str): 'cuda', 'mps', 'cpu' или None (автоопределение)
-- `quantize` (bool): использовать квантизацию (только CPU)
-- `max_len` (int): максимальная длина последовательности
+The project is distributed under the MIT license. See the `LICENSE` file for details.
 
-#### `__call__(texts, format, batch_size)`
+The dataset is also distributed under the MIT license:
+- **Source**: [nevmenandr/accentual-syllabic-verse-in-russian-prose](https://huggingface.co/datasets/nevmenandr/accentual-syllabic-verse-in-russian-prose)
+- **License**: MIT
 
-Основной метод для расстановки ударений.
+## 🙏 Acknowledgments
 
-**Параметры:**
-- `texts` (str | List[str]): текст или список текстов
-- `format` (str): 'apostrophe', 'synthesis' или 'both'
-- `batch_size` (int): размер батча для обработки
+- Dataset provided by [nevmenandr](https://huggingface.co/nevmenandr)
+- Project uses the Transformer architecture from PyTorch
+- Inspired by natural language processing tasks for Russian language
 
-**Возвращает:**
-- str | List[str] | Tuple[str, str]: результат в выбранном формате
+## 🔗 Useful Links
 
-#### `cache_info()`
-
-Возвращает информацию о кэше.
-
-**Возвращает:**
-- dict: {'size': int, 'hits': int, 'misses': int}
-
-#### `clear_cache()`
-
-Очищает кэш.
-
-### Функция load_accentor
-
-```python
-load_accentor(model_path='acc_model.pt', 
-              vocab_path='vocab.json',
-              device=None, 
-              quantize=False) -> Accentor
-```
-
-Загружает и возвращает готовый экземпляр Accentor.
-
-## ⚡ Оптимизация производительности
-
-### Рекомендации по скорости
-
-1. **Используйте батчи**: `batch_size=32` для оптимальной скорости
-2. **GPU**: CUDA или Apple MPS ускоряет обработку в 3-5 раз
-3. **Кэширование**: повторяющиеся фразы обрабатываются мгновенно
-4. **Квантизация**: `quantize=True` для CPU (небольшая потеря точности)
-
-### Бенчмарки
-
-| Устройство | Batch Size | Скорость (предл/сек) |
-|------------|-----------|---------------------|
-| Mac Mini M4 (MPS) | 8 | 2.5 |
-| MacBook Air M1 (MPS) | 8 | 1.5 |
-| CPU (8 cores) | 8 | 0.8 |
-
-## 🤝 Вклад в проект
-
-Приветствуются любые предложения по улучшению! 
-
-1. Форкните репозиторий
-2. Создайте ветку для новой функции (`git checkout -b feature/AmazingFeature`)
-3. Закоммитьте изменения (`git commit -m 'Add some AmazingFeature'`)
-4. Запушьте в ветку (`git push origin feature/AmazingFeature`)
-5. Откройте Pull Request
-
-## 📄 Лицензия
-
-Проект распространяется под лицензией MIT. См. файл `LICENSE` для деталей.
-
-Датасет также распространяется под лицензией MIT:
-- **Источник**: [nevmenandr/accentual-syllabic-verse-in-russian-prose](https://huggingface.co/datasets/nevmenandr/accentual-syllabic-verse-in-russian-prose)
-- **Лицензия**: MIT
-
-## 🙏 Благодарности
-
-- Датасет предоставлен [nevmenandr](https://huggingface.co/nevmenandr)
-- Проект использует архитектуру Transformer от PyTorch
-- Вдохновлен задачами обработки естественного языка для русского языка
-
-## 📧 Контакты
-
-Если у вас есть вопросы или предложения, создайте issue в репозитории.
-
-## 🔗 Полезные ссылки
-
-- [Датасет на HuggingFace](https://huggingface.co/datasets/nevmenandr/accentual-syllabic-verse-in-russian-prose)
-- [PyTorch Documentation](https://pytorch.org/docs/stable/index.html)
-- [Transformer Architecture](https://arxiv.org/abs/1706.03762)
+- **PyPI package**: `ruaccent-predictor`
+- **Repository**: https://github.com/kubataba/Russian-Stress-Accent-Predictor
+- **Dataset**: https://huggingface.co/datasets/nevmenandr/accentual-syllabic-verse-in-russian-prose
+- **PyTorch Documentation**: https://pytorch.org/docs/stable/index.html
 
 ---
 
-**Версия**: 1.0.0  
-**Дата обновления**: Февраль 2026
+**Package Version**: 1.1.0  
+**Package Name**: ruaccent-predictor  
+**Last Updated**: February 2026

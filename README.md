@@ -294,7 +294,19 @@ The dataset is also distributed under the MIT license:
 - **PyTorch Documentation**: https://pytorch.org/docs/stable/index.html
 
 ---
-
-**Package Version**: 1.1.0  
 **Package Name**: ruaccent-predictor  
 **Last Updated**: February 2026
+## Changelog
+
+### 1.2.0 (2026-02-05)
+**Improvements:**
+- Fixed critical packaging issue where model files were missing from wheel distributions
+- Restructured package layout for better organization (model files now inside package)
+- Improved file loading logic to use relative paths
+- Updated all build configurations for reliability
+- Enhanced installation experience
+
+### Version 1.1.0 (2025-02-04)
+- Initial release
+- 99.7% accuracy on validation set
+- Support for apostrophe and synthesis formats

@@ -1,6 +1,5 @@
 include README.md
 include LICENSE
 include requirements.txt
-include model/acc_model.pt
-include model/vocab.json
 recursive-include examples *.py
+recursive-include ruaccent *

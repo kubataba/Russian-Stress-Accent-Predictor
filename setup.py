@@ -7,9 +7,9 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="ruaccent-predictor",
-    version="1.1.0",
+    version="1.2.0",
     author="Eduard Emkuzhev",
-    author_email="your-email@example.com",
+    author_email="info@copperline.info",
     description="Russian stress accent prediction using Transformer model",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -33,11 +33,9 @@ setup(
     install_requires=[
         "torch>=2.0.0",
         "tqdm>=4.65.0",
-        "pandas>=2.0.0",
-        "numpy>=1.24.0",
     ],
     package_data={
-        "ruaccent": ["model/acc_model.pt", "model/vocab.json"],
+        "ruaccent": ["model/*.pt", "model/*.json"],
     },
     include_package_data=True,
     entry_points={

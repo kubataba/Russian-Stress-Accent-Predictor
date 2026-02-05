@@ -172,12 +172,21 @@ class Accentor:
     
     def __init__(
         self,
-        model_path: str = 'model/acc_model.pt',
-        vocab_path: str = 'model/vocab.json',
+        model_path: str = None,
+        vocab_path: str = None,
         device: str = None,
         quantize: bool = False,
         max_len: int = 200
     ):
+
+        if model_path is None:
+            package_dir = Path(__file__).parent.resolve()
+            model_path = str(package_dir / 'model' / 'acc_model.pt')
+        
+        if vocab_path is None:
+            package_dir = Path(__file__).parent.resolve()
+            vocab_path = str(package_dir / 'model' / 'vocab.json')
+
         """
         Initialize the accentor
         
@@ -594,8 +603,8 @@ class Accentor:
 # ============================================================================
 
 def load_accentor(
-    model_path: str = 'model/acc_model.pt',
-    vocab_path: str = 'model/vocab.json',
+    model_path: str = None,
+    vocab_path: str = None,
     device: str = None,
     quantize: bool = False
 ) -> Accentor:
@@ -611,6 +620,15 @@ def load_accentor(
     Returns:
         Accentor instance
     """
+    # Get absolute path to package directory
+    if model_path is None:
+        package_dir = Path(__file__).parent.resolve()
+        model_path = str(package_dir / 'model' / 'acc_model.pt')
+    
+    if vocab_path is None:
+        package_dir = Path(__file__).parent.resolve()
+        vocab_path = str(package_dir / 'model' / 'vocab.json')
+    
     print("=" * 60)
     print("Loading Custom Accentor")
     print("=" * 60)

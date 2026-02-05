@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ruaccent-predictor"
-version = "1.1.0"
+version = "1.2.0"
 description = "Russian stress accent prediction using Transformer model"
 readme = "README.md"
 authors = [
-    {name = "Eduard Emkuzhev", email = "your-email@example.com"}
+    {name = "Eduard Emkuzhev", email = "info@copperline.info"}
 ]
 license = {text = "MIT"}
 classifiers = [
